@@ -336,7 +336,29 @@
                 font-size: 12px;
                 margin-top: 5px;
             }
+            /* 继续添加图片按钮 */
+            .file-add-more {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 8px 15px;
+                background: #f0f0f0;
+                border-radius: 20px;
+                margin-top: 10px;
+                cursor: pointer;
+                color: #667eea;
+                font-size: 14px;
+                border: 1px dashed #667eea;
+            }
 
+            .file-add-more:hover {
+                background: #e0e0e0;
+            }
+
+            .add-icon {
+                font-size: 18px;
+                font-weight: bold;
+            }
             /* 移动端适配 */
             @media (max-width: 768px) {
                 .file-input-hint {
@@ -417,7 +439,7 @@
             </div>
             <button type="button" class="add-btn" onclick="addPushItem()">+ 添加推车明细</button>
 
-            <!-- 推车图部分 - 适配移动端 -->
+            <!-- 推车图部分 - 修复多图上传 -->
             <div class="form-group">
                 <label for="pushImages">📸 推车图：</label>
                 <div class="file-input-container">
@@ -428,7 +450,10 @@
                     </div>
                 </div>
                 <div id="pushImagePreview" class="image-preview-container"></div>
-                <small class="file-note">支持多张图片，点击"+"继续添加</small>
+                <div class="file-add-more" onclick="document.getElementById('pushImages').click()">
+                    <span class="add-icon">+</span> 继续添加图片
+                </div>
+                <small class="file-note">支持多张图片，点击"继续添加"可以追加选择</small>
             </div>
         </div>
 
@@ -444,6 +469,7 @@
             </div>
             <button type="button" class="add-btn" onclick="addColdItem()">+ 添加自带冷明细</button>
 
+            <!-- 自带冷图部分 - 同样修复 -->
             <div class="form-group">
                 <label for="selfColdImages">❄️ 自带冷图：</label>
                 <div class="file-input-container">
@@ -454,7 +480,10 @@
                     </div>
                 </div>
                 <div id="coldImagePreview" class="image-preview-container"></div>
-                <small class="file-note">支持多张图片，点击"+"继续添加</small>
+                <div class="file-add-more" onclick="document.getElementById('selfColdImages').click()">
+                    <span class="add-icon">+</span> 继续添加图片
+                </div>
+                <small class="file-note">支持多张图片，点击"继续添加"可以追加选择</small>
             </div>
         </div>
 

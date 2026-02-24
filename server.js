@@ -9,22 +9,24 @@ require('dotenv').config();
 const app = express();
 
 // 连接 MongoDB
-// 修改这行
 const MONGODB_URI = process.env.MONGODB_URI;
 
 // 添加连接选项
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000, // 5秒超时
-    socketTimeoutMS: 45000, // 45秒
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
 }).then(() => {
     console.log('MongoDB connected successfully');
+    initDefaultRates();  // 初始化捆率
 }).catch(err => {
     console.error('MongoDB connection error:', err);
 });
 
-// 定义 Schema
+// ============= 定义 Schema =============
+
+// 分配 Schema
 const allocationSchema = new mongoose.Schema({
     group_text: String,
     productCode: String,
@@ -36,6 +38,7 @@ const allocationSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
+// 提交 Schema
 const submissionSchema = new mongoose.Schema({
     cn: String,
     group_text: String,
@@ -54,10 +57,47 @@ const submissionSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+// 捆率 Schema
+const rateSchema = new mongoose.Schema({
+    productCode: { type: String, required: true, unique: true },
+    rate: { type: Number, required: true },
+    description: String,
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
 const Allocation = mongoose.model('Allocation', allocationSchema);
 const Submission = mongoose.model('Submission', submissionSchema);
+const Rate = mongoose.model('Rate', rateSchema);
 
-// 中间件配置
+// ============= 初始化默认捆率 =============
+async function initDefaultRates() {
+    const defaultRates = [
+        { productCode: 'A1', rate: 2, description: '1k2' },
+        { productCode: 'C2', rate: 2, description: '1k2' },
+        { productCode: 'C4', rate: 2, description: '1k2' },
+        { productCode: 'C8', rate: 2, description: '1k2' },
+        { productCode: 'B15', rate: 2, description: '1k2' },
+        { productCode: 'A4', rate: 1, description: '1k1' },
+        { productCode: 'B5', rate: 1, description: '1k1' },
+        { productCode: 'A10', rate: 1, description: '1k1' },
+        { productCode: 'C12', rate: 1, description: '1k1' },
+        { productCode: 'B16', rate: 1, description: '1k1' },
+        { productCode: 'C14', rate: 1, description: '1k1' },
+        { productCode: 'C7', rate: 1, description: '1k1' }
+    ];
+
+    for (const item of defaultRates) {
+        await Rate.findOneAndUpdate(
+            { productCode: item.productCode },
+            { $setOnInsert: item },
+            { upsert: true }
+        );
+    }
+    console.log('默认捆率初始化完成');
+}
+
+// ============= 中间件配置 =============
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -84,19 +124,20 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-// 捆率映射
-const bundleRates = {
-    'A1': 2, 'C2': 2, 'C4': 2, 'C8': 2, 'B15': 2,
-    'A4': 1, 'B5': 1, 'A10': 1, 'C12': 1, 'B16': 1, 'C14': 1, 'C7': 1
-};
-
-// 计算最终捆数函数
-function calculateFinalBundles(member, allocations) {
+// ============= 计算最终捆数函数 =============
+async function calculateFinalBundles(member, allocations) {
     console.log('\n=== 开始计算 ' + member.cn + ' 的最终捆数 ===');
     console.log('团员提交组别:', member.group);
     console.log('推车类型:', member.pushType);
     console.log('推车明细:', JSON.stringify(member.pushDetails));
     console.log('自带冷明细:', JSON.stringify(member.selfColdDetails));
+
+    // 从数据库获取所有捆率
+    const rates = await Rate.find();
+    const bundleRates = {};
+    rates.forEach(r => {
+        bundleRates[r.productCode] = r.rate;
+    });
 
     var memberAllocations = [];
     for (var i = 0; i < allocations.length; i++) {
@@ -358,11 +399,101 @@ app.delete('/api/admin/reject-submission/:id', async function(req, res) {
     }
 });
 
-// 获取团员捆表
+// ============= 捆率管理 API =============
+
+// 获取所有捆率
+app.get('/api/admin/rates', async (req, res) => {
+    try {
+        const rates = await Rate.find().sort({ productCode: 1 });
+        res.json(rates);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 添加捆率
+app.post('/api/admin/rates', async (req, res) => {
+    try {
+        const { productCode, rate } = req.body;
+
+        // 验证格式
+        if (!/^[A-Za-z]\d+$/.test(productCode)) {
+            return res.status(400).json({ error: '商品编号格式应为字母+数字' });
+        }
+
+        // 检查是否已存在
+        const existing = await Rate.findOne({ productCode: productCode.toUpperCase() });
+        if (existing) {
+            return res.status(400).json({ error: '该商品已存在' });
+        }
+
+        const newRate = new Rate({
+            productCode: productCode.toUpperCase(),
+            rate: parseInt(rate),
+            description: rate === '0' ? '无捆' : `1k${rate}`
+        });
+
+        await newRate.save();
+        res.json({ success: true, message: '添加成功' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 更新捆率
+app.put('/api/admin/rates/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+        const { rate } = req.body;
+
+        await Rate.findOneAndUpdate(
+            { productCode: code },
+            {
+                rate: parseInt(rate),
+                description: rate === '0' ? '无捆' : `1k${rate}`,
+                updatedAt: new Date()
+            }
+        );
+
+        res.json({ success: true, message: '更新成功' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 删除捆率
+app.delete('/api/admin/rates/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+        await Rate.deleteOne({ productCode: code });
+        res.json({ success: true, message: '删除成功' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 捆率更新后重新计算
+app.post('/api/admin/recalculate-all', async (req, res) => {
+    try {
+        console.log('捆率已更新，触发重新计算');
+        res.json({ success: true, message: '重新计算触发成功' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ============= 获取团员捆表（使用数据库捆率） =============
 app.get('/api/admin/bundle-table', async function(req, res) {
     try {
         const allocations = await Allocation.find();
         const submissions = await Submission.find({ status: '已通过' });
+        const rates = await Rate.find();
+
+        // 转换为对象方便查找
+        const bundleRates = {};
+        rates.forEach(r => {
+            bundleRates[r.productCode] = r.rate;
+        });
 
         var bundleTable = [];
 
@@ -437,7 +568,7 @@ app.get('/api/admin/bundle-table', async function(req, res) {
     }
 });
 
-// 清空数据库（测试用）
+// ============= 清空数据库（只清空分配和提交，保留捆率） =============
 app.post('/api/admin/clear-database', async function(req, res) {
     try {
         var confirmText = req.body.confirmText;
@@ -446,17 +577,18 @@ app.post('/api/admin/clear-database', async function(req, res) {
             return res.status(400).json({ error: '确认文本不正确' });
         }
 
+        // 只清空分配和提交记录，保留捆率规则
         await Allocation.deleteMany({});
         await Submission.deleteMany({});
 
-        res.json({ success: true, message: '数据库已清空' });
+        res.json({ success: true, message: '捆表数据已清空，捆率规则已保留' });
     } catch (error) {
         console.error('Clear database error:', error);
         res.status(500).json({ error: error.message });
     }
 });
 
-// 启动服务器
+// ============= 启动服务器 =============
 var PORT = process.env.PORT || 3001;
 app.listen(PORT, function() {
     console.log('Server running on port ' + PORT);

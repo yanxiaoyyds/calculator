@@ -243,19 +243,6 @@
             font-weight: bold;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            table {
-                font-size: 14px;
-            }
-
-            th, td {
-                padding: 8px;
-            }
-        }
         .modal {
             display: none;
             position: fixed;
@@ -351,6 +338,7 @@
             background: #c82333;
         }
 
+        /* ===== 组别管理优化 ===== */
         .group-tag {
             display: inline-block;
             padding: 4px 8px;
@@ -361,24 +349,9 @@
             color: #495057;
         }
 
-        .add-group-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            margin-left: 10px;
-        }
-
-        .add-group-btn:hover {
-            background: #218838;
-        }
-
         .group-management {
             margin-bottom: 15px;
-            padding: 15px;
+            padding: 20px;
             background: #f8f9fa;
             border-radius: 8px;
         }
@@ -386,18 +359,26 @@
         .group-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin: 15px 0 20px 0;
+            padding: 5px 0;
         }
 
         .group-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             background: white;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 8px 15px;
+            border-radius: 20px;
             border: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .group-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 8px rgba(102,126,234,0.15);
         }
 
         .group-item .remove-group {
@@ -405,10 +386,38 @@
             cursor: pointer;
             font-weight: bold;
             margin-left: 5px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #fff;
+            transition: all 0.2s;
         }
 
         .group-item .remove-group:hover {
-            color: #c82333;
+            background: #dc3545;
+            color: white;
+        }
+
+        .add-group-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 10px;
+            transition: background 0.3s;
+            box-shadow: 0 2px 4px rgba(40,167,69,0.2);
+        }
+
+        .add-group-btn:hover {
+            background: #218838;
+            box-shadow: 0 4px 8px rgba(40,167,69,0.3);
         }
 
         .status-pending-audit {
@@ -444,6 +453,7 @@
         .reject-btn:hover {
             background: #c82333;
         }
+
         .image-gallery {
             display: flex;
             gap: 5px;
@@ -501,31 +511,21 @@
         .close-preview:hover {
             color: #bbb;
         }
-        /* 移动端图片画廊 */
-        .image-gallery {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            max-width: 200px;
-        }
 
-        .image-gallery img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 4px;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            transition: transform 0.2s;
-        }
-
-        .image-gallery img:hover {
-            transform: scale(1.1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        /* 移动端适配 */
+        /* ===== 移动端通用适配 ===== */
         @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
             .image-gallery {
                 max-width: 150px;
             }
@@ -541,7 +541,7 @@
             }
 
             table {
-                min-width: 1000px; /* 确保表格可以横向滚动 */
+                min-width: 1000px;
             }
 
             /* 按钮大小适配触屏 */
@@ -549,6 +549,29 @@
                 padding: 8px 12px;
                 font-size: 14px;
                 margin: 2px;
+            }
+
+            .close-preview {
+                font-size: 50px;
+                top: 10px;
+                right: 15px;
+            }
+
+            /* 组别管理移动端优化 */
+            .group-list {
+                gap: 8px;
+                margin: 10px 0 15px 0;
+            }
+
+            .group-item {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            .add-group-btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 15px;
             }
         }
 
@@ -594,15 +617,7 @@
             color: #bbb;
         }
 
-        /* 移动端关闭按钮更大 */
-        @media (max-width: 768px) {
-            .close-preview {
-                font-size: 50px;
-                top: 10px;
-                right: 15px;
-            }
-        }
-        /* ===== 手机端优化 ===== */
+        /* ===== 手机端优化（视图切换、卡片等） ===== */
         @media screen and (max-width: 768px) {
             /* 视图切换按钮 */
             .view-toggle {
@@ -610,6 +625,7 @@
                 gap: 10px;
                 margin: 10px 0;
                 justify-content: center;
+                flex-wrap: wrap;
             }
 
             .view-btn {
@@ -621,6 +637,7 @@
                 font-size: 14px;
                 cursor: pointer;
                 transition: all 0.3s;
+                flex: 1 1 auto;
             }
 
             .view-btn.active {
@@ -634,16 +651,10 @@
                 color: white;
                 border: none;
                 padding: 8px 15px;
-                border-radius: 8px;
+                border-radius: 20px;
                 font-size: 14px;
                 cursor: pointer;
-                margin-left: 10px;
-            }
-
-            /* 表格视图（默认） */
-            .table-view {
-                display: block;
-                overflow-x: auto;
+                flex: 1 1 auto;
             }
 
             /* 卡片视图 */
@@ -713,7 +724,7 @@
                 color: #856404;
             }
 
-            /* 简化视图（用于导出/快速查看） */
+            /* 简化视图 */
             .simple-view {
                 display: none;
             }
@@ -736,6 +747,7 @@
                 display: flex;
                 gap: 15px;
                 align-items: center;
+                flex-wrap: wrap;
             }
 
             .simple-cn {
@@ -755,6 +767,186 @@
                 font-weight: bold;
                 min-width: 40px;
             }
+
+            /* ===== 修复管理员分配明细布局 ===== */
+            /* 分配明细项改为列布局 */
+            .allocation-item {
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .allocation-item input {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .allocation-item .remove-btn {
+                width: 100%;
+                padding: 10px;
+            }
+
+            /* 组别输入框适应 */
+            input[name="group"] {
+                width: 100% !important;
+                max-width: none !important;
+            }
+
+            /* 分配表单整体优化 */
+            .form-section {
+                padding: 15px;
+                margin: 10px 0;
+            }
+
+            /* 按钮适应 */
+            .add-btn, .submit-btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            /* 分配记录表格横向滚动 */
+            #allocationTable {
+                min-width: 600px;
+            }
+
+            /* 标签页按钮优化 */
+            .tab-container {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .tab-btn {
+                flex: 1 1 auto;
+                padding: 10px 8px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+        }
+
+        /* ===== 捆率管理样式 ===== */
+        /* 新增捆率表单 */
+        #newProductCode, #newBundleRate {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        #newProductCode:focus, #newBundleRate:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        #newProductCode {
+            text-transform: uppercase; /* 自动转大写 */
+        }
+
+        /* 捆率表格样式 */
+        #ratesTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #ratesTable th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        #ratesTable td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        #ratesTable tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* 按钮样式 */
+        #ratesTable .edit-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+
+        #ratesTable .edit-btn:hover {
+            background: #138496;
+        }
+
+        #ratesTable .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+
+        #ratesTable .delete-btn:hover {
+            background: #c82333;
+        }
+
+        /* 弹窗内输入框样式 */
+        #editProductCode, #editBundleRate {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        #editProductCode:focus, #editBundleRate:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* 商品编号显示样式 */
+        #confirmProductCode, #confirmBundleRate {
+            font-weight: bold;
+            color: #667eea;
+            padding: 5px 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            #ratesTable {
+                font-size: 13px;
+            }
+
+            #ratesTable th,
+            #ratesTable td {
+                padding: 8px 10px;
+            }
+
+            #ratesTable .edit-btn,
+            #ratesTable .delete-btn {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            #newProductCode, #newBundleRate {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -767,19 +959,14 @@
         <button class="danger-btn" onclick="showClearDatabaseModal()">清空数据库</button>
     </div>
 
-    <!-- 手机端视图切换 (放在表格上面) -->
-    <div class="view-toggle" id="viewToggle">
-        <button class="view-btn active" onclick="switchView('table')">表格</button>
-        <button class="view-btn" onclick="switchView('card')">卡片</button>
-        <button class="view-btn" onclick="switchView('simple')">简洁</button>
-        <button class="export-btn" onclick="exportToCSV()">导出CSV</button>
-    </div>
 
     <div class="tab-container">
         <button class="tab-btn active" onclick="showTab('bundle')">团员捆表</button>
-        <button class="tab-btn" onclick="showTab('audit')">待审核提交</button>
-        <button class="tab-btn" onclick="showTab('allocation')">捆数分配</button>
+        <button class="tab-btn" onclick="showTab('audit')">待审核</button>
+        <button class="tab-btn" onclick="showTab('allocation')">上捆</button>
         <button class="tab-btn" onclick="showTab('groups')">组别管理</button>
+        <button class="tab-btn" onclick="showTab('rates')">🔢 捆率管理</button>  <!-- 新增 -->
+
     </div>
 
     <div id="alert" class="alert"></div>
@@ -827,6 +1014,15 @@
 
     <div id="bundleTab" class="tab-content active">
         <h2>📋 团员捆表</h2>
+
+        <!-- 手机端视图切换 (放在表格上面) -->
+        <div class="view-toggle" id="viewToggle">
+            <button class="view-btn active" onclick="switchView('table')">表格</button>
+            <button class="view-btn" onclick="switchView('card')">卡片</button>
+            <button class="view-btn" onclick="switchView('simple')">简洁</button>
+            <button class="export-btn" onclick="exportToCSV()">导出CSV</button>
+        </div>
+
         <div class="table-container">
             <table id="bundleTable">
                 <thead>
@@ -959,6 +1155,103 @@
             </div>
         </div>
     </div>
+
+    <div id="ratesTab" class="tab-content">
+        <h2>🔢 捆率管理</h2>
+
+        <!-- 新增捆率表单 -->
+        <div class="form-section">
+            <h3>➕ 新增捆率规则</h3>
+            <div class="form-group">
+                <label>商品编号：</label>
+                <input type="text" id="newProductCode" placeholder="例如: C7" maxlength="3" style="width: 120px;">
+                <small style="color: #666; display: block;">输入商品编号，如 A1、B15、C7</small>
+            </div>
+            <div class="form-group">
+                <label>捆率：</label>
+                <select id="newBundleRate" style="width: 120px;">
+                    <option value="0">无捆 (0)</option>
+                    <option value="1">1k1 (捆1)</option>
+                    <option value="2">1k2 (捆2)</option>
+                    <option value="3">1k3 (捆3)</option>
+                    <option value="4">1k4 (捆4)</option>
+                </select>
+            </div>
+            <button class="add-btn" onclick="showAddRateModal()">添加捆率规则</button>
+        </div>
+
+        <!-- 当前捆率列表 -->
+        <h3>📋 当前捆率规则</h3>
+        <div class="table-container">
+            <table id="ratesTable">
+                <thead>
+                <tr>
+                    <th>商品编号</th>
+                    <th>捆率</th>
+                    <th>说明</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="ratesBody">
+                <tr>
+                    <td colspan="4" class="loading">加载中...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 添加捆率确认弹窗 -->
+    <div id="addRateModal" class="modal">
+        <div class="modal-content">
+            <h3>确认添加捆率规则</h3>
+            <p>商品编号: <span id="confirmProductCode"></span></p>
+            <p>捆率: <span id="confirmBundleRate"></span></p>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="hideAddRateModal()">取消</button>
+                <button class="confirm-btn" onclick="addRate()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑捆率弹窗 -->
+    <div id="editRateModal" class="modal">
+        <div class="modal-content">
+            <h3>编辑捆率规则</h3>
+            <input type="hidden" id="editRateId">
+            <div class="form-group">
+                <label>商品编号：</label>
+                <input type="text" id="editProductCode" readonly style="background:#f0f0f0;">
+            </div>
+            <div class="form-group">
+                <label>捆率：</label>
+                <select id="editBundleRate">
+                    <option value="0">无捆 (0)</option>
+                    <option value="1">1k1 (捆1)</option>
+                    <option value="2">1k2 (捆2)</option>
+                    <option value="3">1k3 (捆3)</option>
+                    <option value="4">1k4 (捆4)</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="hideEditRateModal()">取消</button>
+                <button class="confirm-btn" onclick="updateRate()">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div id="deleteRateModal" class="modal">
+        <div class="modal-content">
+            <h3>⚠️ 确认删除</h3>
+            <p>确定要删除商品 <span id="deleteProductCode"></span> 的捆率规则吗？</p>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="hideDeleteRateModal()">取消</button>
+                <button class="confirm-btn" onclick="confirmDeleteRate()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 图片预览弹窗 -->
     <div id="imagePreviewModal" class="image-preview-modal" onclick="this.style.display='none'">
         <span class="close-preview" onclick="document.getElementById('imagePreviewModal').style.display='none'">&times;</span>
@@ -1667,6 +1960,206 @@
         link.download = `捆数统计_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
     }
+    // ===== 捆率管理 =====
+    let rateToDelete = null;
+
+    // 加载捆率列表
+    function loadRates() {
+        fetch('/api/admin/rates')
+            .then(res => res.json())
+            .then(data => {
+                var tbody = document.getElementById('ratesBody');
+                var html = '';
+
+                data.forEach(item => {
+                    var rateText = item.rate === 0 ? '无捆' : '1k' + item.rate;
+                    html += '<tr>' +
+                        '<td><strong>' + item.productCode + '</strong></td>' +
+                        '<td>' + rateText + '</td>' +
+                        '<td>' + (item.rate === 0 ? '无需捆' : '买1捆' + item.rate) + '</td>' +
+                        '<td>' +
+                        '<button class="edit-btn" onclick="showEditRateModal(\'' + item.productCode + '\', ' + item.rate + ')">编辑</button> ' +
+                        '<button class="delete-btn" onclick="showDeleteRateModal(\'' + item.productCode + '\')">删除</button>' +
+                        '</td>' +
+                        '</tr>';
+                });
+
+                tbody.innerHTML = html;
+            })
+            .catch(err => {
+                console.error('加载捆率失败:', err);
+                document.getElementById('ratesBody').innerHTML = '<tr><td colspan="4" style="color: red;">加载失败</td></tr>';
+            });
+    }
+
+    // 显示添加弹窗
+    function showAddRateModal() {
+        var code = document.getElementById('newProductCode').value.toUpperCase().trim();
+        var rate = document.getElementById('newBundleRate').value;
+
+        if (!code) {
+            showAlert('请输入商品编号', 'error');
+            return;
+        }
+
+        // 验证格式（字母+数字）
+        if (!/^[A-Za-z]\d+$/.test(code)) {
+            showAlert('商品编号格式应为字母+数字，如 A1', 'error');
+            return;
+        }
+
+        document.getElementById('confirmProductCode').textContent = code;
+        document.getElementById('confirmBundleRate').textContent = rate === '0' ? '无捆' : '1k' + rate;
+        document.getElementById('addRateModal').style.display = 'block';
+    }
+
+    function hideAddRateModal() {
+        document.getElementById('addRateModal').style.display = 'none';
+    }
+
+    // 添加捆率
+    function addRate() {
+        var code = document.getElementById('confirmProductCode').textContent;
+        var rate = document.getElementById('newBundleRate').value;
+
+        fetch('/api/admin/rates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productCode: code, rate: rate })
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    showAlert('添加成功！', 'success');
+                    hideAddRateModal();
+                    document.getElementById('newProductCode').value = '';
+                    loadRates();
+                    updateProductSelect();
+                    // 触发重新计算
+                    fetch('/api/admin/recalculate-all', { method: 'POST' });
+                } else {
+                    showAlert('添加失败：' + result.error, 'error');
+                }
+            });
+    }
+
+    // 显示编辑弹窗
+    function showEditRateModal(code, rate) {
+        document.getElementById('editRateId').value = code;
+        document.getElementById('editProductCode').value = code;
+        document.getElementById('editBundleRate').value = rate.toString();
+        document.getElementById('editRateModal').style.display = 'block';
+    }
+
+    function hideEditRateModal() {
+        document.getElementById('editRateModal').style.display = 'none';
+    }
+
+    // 更新捆率
+    function updateRate() {
+        var code = document.getElementById('editRateId').value;
+        var rate = document.getElementById('editBundleRate').value;
+
+        fetch('/api/admin/rates/' + code, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rate: rate })
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    showAlert('修改成功！', 'success');
+                    hideEditRateModal();
+                    loadRates();
+                    updateProductSelect();
+                    fetch('/api/admin/recalculate-all', { method: 'POST' });
+                } else {
+                    showAlert('修改失败：' + result.error, 'error');
+                }
+            });
+    }
+
+    // 显示删除弹窗
+    function showDeleteRateModal(code) {
+        document.getElementById('deleteProductCode').textContent = code;
+        document.getElementById('deleteRateModal').style.display = 'block';
+        rateToDelete = code;
+    }
+
+    function hideDeleteRateModal() {
+        document.getElementById('deleteRateModal').style.display = 'none';
+        rateToDelete = null;
+    }
+
+    // 确认删除
+    function confirmDeleteRate() {
+        if (!rateToDelete) return;
+
+        fetch('/api/admin/rates/' + rateToDelete, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    showAlert('删除成功！', 'success');
+                    hideDeleteRateModal();
+                    loadRates();
+                    updateProductSelect();
+                    fetch('/api/admin/recalculate-all', { method: 'POST' });
+                } else {
+                    showAlert('删除失败：' + result.error, 'error');
+                }
+            });
+    }
+
+    // 更新所有捆率下拉框
+    function updateProductSelect() {
+        fetch('/api/admin/rates')
+            .then(res => res.json())
+            .then(rates => {
+                var select = document.getElementById('productCode');
+                var currentValue = select.value;
+
+                var html = '<option value="">请选择制品</option>';
+                rates.forEach(item => {
+                    var rateText = item.rate === 0 ? '无捆' : '1k' + item.rate;
+                    html += '<option value="' + item.productCode + '">' + item.productCode + ' (' + rateText + ')</option>';
+                });
+
+                select.innerHTML = html;
+                if (currentValue) {
+                    select.value = currentValue;
+                }
+            });
+    }
+
+    // 在 showTab 中添加 rates 的处理
+    function showTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        event.target.classList.add('active');
+        document.getElementById(tabName + 'Tab').classList.add('active');
+
+        if (tabName === 'allocation') {
+            loadAllocations();
+            updateProductSelect();  // 更新下拉框
+        } else if (tabName === 'bundle') {
+            loadBundleTable();
+        } else if (tabName === 'audit') {
+            loadPendingSubmissions();
+        } else if (tabName === 'groups') {
+            loadGroups();
+        } else if (tabName === 'rates') {
+            loadRates();
+        }
+    }
+
+    // 在 DOMContentLoaded 中加载捆率
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBundleTable();
+        updateProductSelect();  // 初始化下拉框
+    });
 </script>
 </body>
 </html>
