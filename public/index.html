@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台历团捆数计算系统 - 团员提交</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin: 20px 0 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .push-item,
+        .cold-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .push-item input,
+        .cold-item input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .push-item input[type="text"],
+        .cold-item input[type="text"] {
+            flex: 2;
+        }
+
+        .push-item input[type="number"],
+        .cold-item input[type="number"] {
+            flex: 1;
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #ff6b81;
+        }
+
+        .add-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .add-btn:hover {
+            background: #764ba2;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.4);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .push-item,
+            .cold-item {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .push-item input,
+            .cold-item input {
+                width: 100%;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            /* 文件上传容器 */
+            .file-input-container {
+                position: relative;
+                width: 100%;
+                min-height: 50px;
+                border: 2px dashed #667eea;
+                border-radius: 8px;
+                background: #f8f9fa;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .file-input-container:hover {
+                border-color: #764ba2;
+                background: #f0f2f5;
+            }
+
+            .file-input-container input[type="file"] {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                cursor: pointer;
+                z-index: 2;
+            }
+
+            .file-input-hint {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                padding: 15px;
+                pointer-events: none;
+                z-index: 1;
+            }
+
+            .hint-icon {
+                font-size: 24px;
+            }
+
+            .hint-text {
+                color: #667eea;
+                font-weight: 500;
+            }
+
+            /* 图片预览容器 */
+            .image-preview-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .preview-item {
+                position: relative;
+                width: 80px;
+                height: 80px;
+                border-radius: 8px;
+                overflow: hidden;
+                border: 2px solid #e0e0e0;
+            }
+
+            .preview-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .preview-item .remove-preview {
+                position: absolute;
+                top: 2px;
+                right: 2px;
+                width: 20px;
+                height: 20px;
+                background: rgba(255, 71, 87, 0.9);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                cursor: pointer;
+                z-index: 3;
+            }
+
+            .preview-item .remove-preview:hover {
+                background: #ff4757;
+            }
+
+            .file-note {
+                display: block;
+                color: #666;
+                font-size: 12px;
+                margin-top: 5px;
+            }
+
+            /* 移动端适配 */
+            @media (max-width: 768px) {
+                .file-input-hint {
+                    padding: 12px;
+                }
+
+                .hint-icon {
+                    font-size: 20px;
+                }
+
+                .hint-text {
+                    font-size: 14px;
+                }
+
+                .preview-item {
+                    width: 70px;
+                    height: 70px;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📅 台历团捆数计算系统 - 团员提交</h1>
+
+    <div class="info-box">
+        <h3>📌 说明</h3>
+        <ul>
+            <li>管理员会分配捆数给你</li>
+            <li>你只需要填写推车和自带冷信息</li>
+            <li><strong>推车类型</strong>：
+                <ul>
+                    <li>有效推车：可解捆</li>
+                    <li>无效推车：可解捆</li>
+                    <li>没推车：捆率+1，仍可用自带冷解捆</li>
+                </ul>
+            </li>
+            <li><strong>解捆规则</strong>：解捆数 = (推车总张数 + 自带冷总张数) ÷ 2，向下取整</li>
+            <li><strong>最终捆数</strong> = 原捆 - 解捆，最小为0</li>
+        </ul>
+    </div>
+
+    <div id="alert" class="alert"></div>
+
+    <form id="submitForm" enctype="multipart/form-data">
+        <div class="form-section">
+            <h2>👤 团员信息</h2>
+            <div class="form-group">
+                <label for="cn">CN：</label>
+                <input type="text" id="cn" name="cn" placeholder="请输入你的CN" required>
+            </div>
+            <div class="form-group">
+                <label>组别：</label>
+                <input type="text" name="group" placeholder="eg. A" maxlength="1" pattern="[A-Da-d]" style="width: 100px;" required>
+                <small style="color: #666; display: block; margin-top: 5px;">输入单个大写字母即可（A/B/C/D）</small>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>🛒 推车信息</h2>
+            <div class="form-group">
+                <label>推车类型：</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="pushType" value="有效推车" required> 有效推车</label>
+                    <label><input type="radio" name="pushType" value="无效推车"> 无效推车</label>
+                    <label><input type="radio" name="pushType" value="没推"> 没推</label>
+                </div>
+            </div>
+
+            <h3>推车明细</h3>
+            <div id="pushItems">
+                <div class="push-item">
+                    <input type="text" name="pushProductCode" placeholder="商品编号，如 A1" maxlength="3">
+                    <input type="number" name="pushQuantity" placeholder="数量" min="1">
+                    <button type="button" class="remove-btn" onclick="removeItem(this)">删除</button>
+                </div>
+            </div>
+            <button type="button" class="add-btn" onclick="addPushItem()">+ 添加推车明细</button>
+
+            <!-- 推车图部分 - 适配移动端 -->
+            <div class="form-group">
+                <label for="pushImages">📸 推车图：</label>
+                <div class="file-input-container">
+                    <input type="file" id="pushImages" name="pushImages" accept="image/*" multiple>
+                    <div class="file-input-hint">
+                        <span class="hint-icon">📱</span>
+                        <span class="hint-text">点击选择图片（可多选）</span>
+                    </div>
+                </div>
+                <div id="pushImagePreview" class="image-preview-container"></div>
+                <small class="file-note">支持多张图片，点击"+"继续添加</small>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>❄️ 自带冷信息</h2>
+            <h3>自带冷明细</h3>
+            <div id="coldItems">
+                <div class="cold-item">
+                    <input type="text" name="coldProductCode" placeholder="商品编号，如 B5" maxlength="3">
+                    <input type="number" name="coldQuantity" placeholder="数量" min="1">
+                    <button type="button" class="remove-btn" onclick="removeItem(this)">删除</button>
+                </div>
+            </div>
+            <button type="button" class="add-btn" onclick="addColdItem()">+ 添加自带冷明细</button>
+
+            <div class="form-group">
+                <label for="selfColdImages">❄️ 自带冷图：</label>
+                <div class="file-input-container">
+                    <input type="file" id="selfColdImages" name="selfColdImages" accept="image/*" multiple>
+                    <div class="file-input-hint">
+                        <span class="hint-icon">📱</span>
+                        <span class="hint-text">点击选择图片（可多选）</span>
+                    </div>
+                </div>
+                <div id="coldImagePreview" class="image-preview-container"></div>
+                <small class="file-note">支持多张图片，点击"+"继续添加</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">提交</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // 显示提示信息
+    function showAlert(message, type) {
+        var alert = document.getElementById('alert');
+        alert.className = 'alert ' + type;
+        alert.textContent = message;
+        alert.style.display = 'block';
+        setTimeout(function() {
+            alert.style.display = 'none';
+        }, 3000);
+    }
+
+    // 添加推车项
+    function addPushItem() {
+        var container = document.getElementById('pushItems');
+        var newItem = document.createElement('div');
+        newItem.className = 'push-item';
+        newItem.innerHTML = `
+            <input type="text" name="pushProductCode" placeholder="商品编号，如 A1" maxlength="3">
+            <input type="number" name="pushQuantity" placeholder="数量" min="1">
+            <button type="button" class="remove-btn" onclick="removeItem(this)">删除</button>
+        `;
+        container.appendChild(newItem);
+    }
+
+    // 添加自带冷项
+    function addColdItem() {
+        var container = document.getElementById('coldItems');
+        var newItem = document.createElement('div');
+        newItem.className = 'cold-item';
+        newItem.innerHTML = `
+            <input type="text" name="coldProductCode" placeholder="商品编号，如 B5" maxlength="3">
+            <input type="number" name="coldQuantity" placeholder="数量" min="1">
+            <button type="button" class="remove-btn" onclick="removeItem(this)">删除</button>
+        `;
+        container.appendChild(newItem);
+    }
+
+    // 删除项
+    function removeItem(btn) {
+        var item = btn.parentElement;
+        if (item.parentElement.children.length > 1) {
+            item.remove();
+        } else {
+            showAlert('至少保留一项', 'error');
+        }
+    }
+
+    // 表单提交
+    document.getElementById('submitForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/submit', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var result = JSON.parse(xhr.responseText);
+                if (result.success) {
+                    showAlert('提交成功！', 'success');
+                    document.getElementById('submitForm').reset();
+                    document.getElementById('pushItems').innerHTML = `
+                        <div class="push-item">
+                            <input type="text" name="pushProductCode" placeholder="商品编号，如 A1" maxlength="3">
+                            <input type="number" name="pushQuantity" placeholder="数量" min="1">
+                            <button type="button" class="remove-btn" onclick="removeItem(this)">删除</button>
+                        </div>
+                    `;
+                    document.getElementById('coldItems').innerHTML = `
+                        <div class="cold-item">
+                            <input type="text" name="coldProductCode" placeholder="商品编号，如 B5" maxlength="3">
+                            <input type="number" name="coldQuantity" placeholder="数量" min="1">
+                            <button type="button" class="remove-btn" onclick="removeItem(this)">删除</button>
+                        </div>
+                    `;
+                } else {
+                    showAlert('提交失败：' + result.error, 'error');
+                }
+            }
+        };
+        xhr.send(formData);
+    });
+    // 处理推车图预览
+    document.getElementById('pushImages').addEventListener('change', function(e) {
+        previewImages(this, 'pushImagePreview');
+    });
+
+    // 处理自带冷图预览
+    document.getElementById('selfColdImages').addEventListener('change', function(e) {
+        previewImages(this, 'coldImagePreview');
+    });
+
+    // 图片预览函数
+    function previewImages(input, previewContainerId) {
+        const container = document.getElementById(previewContainerId);
+        container.innerHTML = '';
+
+        if (input.files) {
+            for (let i = 0; i < input.files.length; i++) {
+                const file = input.files[i];
+                const reader = new FileReader();
+
+                const previewItem = document.createElement('div');
+                previewItem.className = 'preview-item';
+
+                const img = document.createElement('img');
+
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                };
+
+                const removeBtn = document.createElement('span');
+                removeBtn.className = 'remove-preview';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    removeFile(input, i);
+                    previewItem.remove();
+                };
+
+                previewItem.appendChild(img);
+                previewItem.appendChild(removeBtn);
+                container.appendChild(previewItem);
+
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+
+    // 移除选中的文件
+    function removeFile(input, index) {
+        const dt = new DataTransfer();
+        const files = input.files;
+
+        for (let i = 0; i < files.length; i++) {
+            if (i !== index) {
+                dt.items.add(files[i]);
+            }
+        }
+
+        input.files = dt.files;
+    }
+</script>
+</body>
+</html>

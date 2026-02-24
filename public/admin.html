@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台历团捆数计算系统 - 管理员</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            border: none;
+            background: #f0f0f0;
+            color: #666;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .image-link {
+            color: #667eea;
+            text-decoration: none;
+            border-bottom: 1px dashed #667eea;
+        }
+
+        .image-link:hover {
+            color: #764ba2;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .allocation-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .allocation-item input {
+            flex: 1;
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .bundle-highlight {
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .status-submitted {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .modal-buttons .confirm-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .modal-buttons .confirm-btn:hover {
+            background: #c82333;
+        }
+
+        .modal-buttons .cancel-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .modal-buttons .cancel-btn:hover {
+            background: #5a6268;
+        }
+
+        .admin-tools {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .danger-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .danger-btn:hover {
+            background: #c82333;
+        }
+
+        .group-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-right: 5px;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .add-group-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-left: 10px;
+        }
+
+        .add-group-btn:hover {
+            background: #218838;
+        }
+
+        .group-management {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .group-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+
+        .group-item .remove-group {
+            color: #dc3545;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .group-item .remove-group:hover {
+            color: #c82333;
+        }
+
+        .status-pending-audit {
+            color: #fd7e14;
+            font-weight: bold;
+        }
+
+        .audit-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .audit-btn:hover {
+            background: #138496;
+        }
+
+        .reject-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .reject-btn:hover {
+            background: #c82333;
+        }
+        .image-gallery {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            max-width: 200px;
+        }
+
+        .image-gallery img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            transition: transform 0.2s;
+        }
+
+        .image-gallery img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .image-preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        .image-preview-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .close-preview {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-preview:hover {
+            color: #bbb;
+        }
+        /* 移动端图片画廊 */
+        .image-gallery {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            max-width: 200px;
+        }
+
+        .image-gallery img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            transition: transform 0.2s;
+        }
+
+        .image-gallery img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .image-gallery {
+                max-width: 150px;
+            }
+
+            .image-gallery img {
+                width: 40px;
+                height: 40px;
+            }
+
+            /* 表格滚动优化 */
+            .table-container {
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 1000px; /* 确保表格可以横向滚动 */
+            }
+
+            /* 按钮大小适配触屏 */
+            .audit-btn, .reject-btn, .edit-btn, .delete-btn {
+                padding: 8px 12px;
+                font-size: 14px;
+                margin: 2px;
+            }
+        }
+
+        /* 图片预览弹窗 - 移动端优化 */
+        .image-preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            touch-action: manipulation;
+        }
+
+        .image-preview-content {
+            margin: auto;
+            display: block;
+            max-width: 95%;
+            max-height: 95%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: contain;
+        }
+
+        .close-preview {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2001;
+            padding: 10px;
+            touch-action: manipulation;
+        }
+
+        .close-preview:hover {
+            color: #bbb;
+        }
+
+        /* 移动端关闭按钮更大 */
+        @media (max-width: 768px) {
+            .close-preview {
+                font-size: 50px;
+                top: 10px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📊 台历团捆数计算系统 - 管理员面板</h1>
+
+    <!-- 管理员工具 -->
+    <div class="admin-tools">
+        <button class="danger-btn" onclick="showClearDatabaseModal()">清空数据库</button>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="showTab('bundle')">团员捆表</button>
+        <button class="tab-btn" onclick="showTab('audit')">待审核提交</button>
+        <button class="tab-btn" onclick="showTab('allocation')">捆数分配</button>
+        <button class="tab-btn" onclick="showTab('groups')">组别管理</button>
+    </div>
+
+    <div id="alert" class="alert"></div>
+
+    <!-- 清空数据库弹窗 -->
+    <div id="clearDatabaseModal" class="modal">
+        <div class="modal-content">
+            <h3>⚠️ 清空数据库</h3>
+            <p>此操作将删除所有数据，且不可恢复！</p>
+            <p>请输入 <strong>"我确定清空"</strong> 确认：</p>
+            <input type="text" id="clearConfirmInput" placeholder="我确定清空">
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="hideClearDatabaseModal()">取消</button>
+                <button class="confirm-btn" onclick="clearDatabase()">确认清空</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 审核弹窗 -->
+    <div id="auditModal" class="modal">
+        <div class="modal-content">
+            <h3>📋 审核提交</h3>
+            <div id="auditContent"></div>
+            <div class="modal-buttons">
+                <button class="reject-btn" onclick="rejectSubmission()">拒绝</button>
+                <button class="audit-btn" onclick="approveSubmission()">通过</button>
+                <button class="cancel-btn" onclick="hideAuditModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加组别弹窗 -->
+    <div id="addGroupModal" class="modal">
+        <div class="modal-content">
+            <h3>➕ 添加组别</h3>
+            <p>输入新组别名称：</p>
+            <input type="text" id="newGroupName" placeholder="例如: E" maxlength="1">
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="hideAddGroupModal()">取消</button>
+                <button class="confirm-btn" onclick="addGroup()">添加</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="bundleTab" class="tab-content active">
+        <h2>📋 团员捆表</h2>
+        <div class="table-container">
+            <table id="bundleTable">
+                <thead>
+                <tr>
+                    <th>CN</th>
+                    <th>组别</th>
+                    <th>分配制品</th>
+                    <th>分配数量</th>
+                    <th>捆率</th>
+                    <th>原捆</th>
+                    <th>提交状态</th>
+                    <th>推车类型</th>
+                    <th>推车明细</th>
+                    <th>推车图</th>
+                    <th>自带冷明细</th>
+                    <th>自带冷图</th>
+                    <th>解捆</th>
+                    <th>后捆</th>
+                </tr>
+                </thead>
+                <tbody id="bundleBody">
+                <tr>
+                    <td colspan="14" class="loading">加载中...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="auditTab" class="tab-content">
+        <h2>⏳ 待审核提交</h2>
+        <div class="table-container">
+            <table id="auditTable">
+                <thead>
+                <tr>
+                    <th>CN</th>
+                    <th>组别</th>
+                    <th>推车类型</th>
+                    <th>推车明细</th>
+                    <th>推车图</th>
+                    <th>自带冷明细</th>
+                    <th>自带冷图</th>
+                    <th>提交时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="auditBody">
+                <tr>
+                    <td colspan="9" class="loading">加载中...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="allocationTab" class="tab-content">
+        <h2>📦 捆数分配</h2>
+        <div class="form-section">
+            <form id="allocationForm">
+                <div class="form-group">
+                    <label>组别：</label>
+                    <input type="text" name="group" placeholder="eg A" maxlength="1" pattern="[A-Da-d]" style="width: 100px;" required>
+                    <small style="color: #666; display: block; margin-top: 5px;">输入单个大写字母即可（A/B/C/D）</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="productCode">含捆制品：</label>
+                    <select id="productCode" name="productCode" required>
+                        <option value="">请选择制品</option>
+                        <option value="A1">A1 (1k2)</option>
+                        <option value="C2">C2 (1k2)</option>
+                        <option value="C4">C4 (1k2)</option>
+                        <option value="C8">C8 (1k2)</option>
+                        <option value="B15">B15 (1k2)</option>
+                        <option value="A4">A4 (1k1)</option>
+                        <option value="B5">B5 (1k1)</option>
+                        <option value="A10">A10 (1k1)</option>
+                        <option value="C12">C12 (1k1)</option>
+                        <option value="B16">B16 (1k1)</option>
+                        <option value="C14">C14 (1k1)</option>
+                        <option value="C7">C7 (1k1)</option>
+                    </select>
+                </div>
+
+                <h3>分配明细</h3>
+                <div id="allocationItems">
+                    <div class="allocation-item">
+                        <input type="text" name="allocationCn" placeholder="CN" required>
+                        <input type="number" name="allocationQuantity" placeholder="数量" min="1" required>
+                        <button type="button" class="remove-btn" onclick="removeAllocationItem(this)">删除</button>
+                    </div>
+                </div>
+                <button type="button" class="add-btn" onclick="addAllocationItem()">+ 添加分配</button>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">提交分配</button>
+                </div>
+            </form>
+        </div>
+
+        <h2>📜 分配记录</h2>
+        <div class="table-container">
+            <table id="allocationTable">
+                <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>组别</th>
+                    <th>制品</th>
+                    <th>分配详情</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="allocationBody">
+                <tr>
+                    <td colspan="5" class="loading">加载中...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="groupsTab" class="tab-content">
+        <h2>👥 组别管理</h2>
+        <div class="form-section">
+            <div class="group-management">
+                <h3>当前组别</h3>
+                <div id="groupList" class="group-list">
+                    <!-- 组别列表动态加载 -->
+                </div>
+                <button class="add-group-btn" onclick="showAddGroupModal()">+ 添加组别</button>
+            </div>
+        </div>
+    </div>
+    <!-- 图片预览弹窗 -->
+    <div id="imagePreviewModal" class="image-preview-modal" onclick="this.style.display='none'">
+        <span class="close-preview" onclick="document.getElementById('imagePreviewModal').style.display='none'">&times;</span>
+        <img class="image-preview-content" id="previewImage">
+    </div>
+</div>
+
+<script>
+
+    // 组别数据（可自定义）
+    var groups = ['A', 'B', 'C', 'D'];
+
+
+    // 显示标签页
+    function showTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        event.target.classList.add('active');
+        document.getElementById(tabName + 'Tab').classList.add('active');
+
+        if (tabName === 'allocation') {
+            loadAllocations();
+            updateGroupSelect();
+        } else if (tabName === 'bundle') {
+            loadBundleTable();
+        } else if (tabName === 'audit') {
+            loadPendingSubmissions();
+        } else if (tabName === 'groups') {
+            loadGroups();
+        }
+    }
+
+
+    // 加载组别列表
+    function loadGroups() {
+        var container = document.getElementById('groupList');
+        var html = '';
+        groups.forEach(function(group) {
+            html += `
+                <div class="group-item">
+                    ${group}组
+                    <span class="remove-group" onclick="removeGroup('${group}')">✕</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // 显示添加组别弹窗
+    function showAddGroupModal() {
+        document.getElementById('addGroupModal').style.display = 'block';
+        document.getElementById('newGroupName').value = '';
+    }
+
+    function hideAddGroupModal() {
+        document.getElementById('addGroupModal').style.display = 'none';
+    }
+
+    // 添加组别
+    function addGroup() {
+        var newGroup = document.getElementById('newGroupName').value.toUpperCase();
+        if (!newGroup || newGroup.length !== 1) {
+            showAlert('组别必须是单个大写字母', 'error');
+            return;
+        }
+        if (groups.includes(newGroup)) {
+            showAlert('组别已存在', 'error');
+            return;
+        }
+        groups.push(newGroup);
+        groups.sort();
+        loadGroups();
+        updateGroupSelect();
+        hideAddGroupModal();
+        showAlert('组别添加成功', 'success');
+    }
+
+    // 删除组别
+    function removeGroup(group) {
+        if (!confirm('确定要删除组别 ' + group + ' 吗？')) {
+            return;
+        }
+        groups = groups.filter(g => g !== group);
+        loadGroups();
+        updateGroupSelect();
+        showAlert('组别已删除', 'success');
+    }
+
+    // 显示清空数据库弹窗
+    function showClearDatabaseModal() {
+        document.getElementById('clearDatabaseModal').style.display = 'block';
+        document.getElementById('clearConfirmInput').value = '';
+    }
+
+    function hideClearDatabaseModal() {
+        document.getElementById('clearDatabaseModal').style.display = 'none';
+    }
+
+    // 清空数据库
+    function clearDatabase() {
+        var confirmText = document.getElementById('clearConfirmInput').value;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/admin/clear-database', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var result = JSON.parse(xhr.responseText);
+                if (result.success) {
+                    showAlert('数据库已清空！', 'success');
+                    hideClearDatabaseModal();
+                    // 刷新所有表格
+                    loadBundleTable();
+                    loadAllocations();
+                    loadPendingSubmissions();
+                } else {
+                    showAlert('清空失败：' + result.error, 'error');
+                }
+            }
+        };
+        xhr.send(JSON.stringify({
+            confirmText: confirmText
+        }));
+    }
+
+    // 加载待审核提交
+    function loadPendingSubmissions() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/admin/pending-submissions', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    var tbody = document.getElementById('auditBody');
+
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">暂无待审核提交</td></tr>';
+                        return;
+                    }
+
+                    var html = '';
+                    for (var i = 0; i < data.length; i++) {
+                        var sub = data[i];
+                        var date = new Date(sub.createdAt).toLocaleString('zh-CN');
+
+                        // 格式化推车明细
+                        var pushDetails = '';
+                        if (sub.pushDetails && sub.pushDetails.length > 0) {
+                            pushDetails = sub.pushDetails.map(d => d.productCode + ':' + d.quantity).join(', ');
+                        } else {
+                            pushDetails = '无';
+                        }
+
+                        // 格式化自带冷明细
+                        var coldDetails = '';
+                        if (sub.selfColdDetails && sub.selfColdDetails.length > 0) {
+                            coldDetails = sub.selfColdDetails.map(d => d.productCode + ':' + d.quantity).join(', ');
+                        } else {
+                            coldDetails = '无';
+                        }
+
+                        // 在 loadPendingSubmissions 函数中
+                        html += '<tr>' +
+                            '<td>' + sub.cn + '</td>' +
+                            '<td>' + sub.group_text + '</td>' +
+                            '<td>' + sub.pushType + '</td>' +
+                            '<td>' + pushDetails + '</td>' +
+                            '<td>' + formatImageGallery(sub.pushImages) + '</td>' +  // 修改这里
+                            '<td>' + coldDetails + '</td>' +
+                            '<td>' + formatImageGallery(sub.selfColdImages) + '</td>' +  // 修改这里
+                            '<td>' + date + '</td>' +
+                            '<td>' +
+                            '<button class="audit-btn" onclick="approveSubmission(\'' + sub.id + '\')">通过</button>' +
+                            '<button class="reject-btn" onclick="rejectSubmission(\'' + sub.id + '\')">拒绝</button>' +
+                            '</td>' +
+                            '</tr>';
+                    }
+                    tbody.innerHTML = html;
+                } else {
+                    console.error('加载待审核提交失败:', xhr.status);
+                    document.getElementById('auditBody').innerHTML = '<tr><td colspan="9" style="text-align: center; color: red;">加载失败</td></tr>';
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    // 显示审核弹窗
+    function showAuditModal(id) {
+        var submission = pendingSubmissions.find(s => s.id === id);
+        if (!submission) return;
+
+        var content = document.getElementById('auditContent');
+        content.innerHTML = `
+            <p><strong>CN:</strong> ${submission.cn}</p>
+            <p><strong>组别:</strong> ${submission.group}</p>
+            <p><strong>推车类型:</strong> ${submission.pushType}</p>
+            <p><strong>推车明细:</strong> ${submission.pushDetails || '无'}</p>
+            <p><strong>自带冷明细:</strong> ${submission.selfColdDetails || '无'}</p>
+        `;
+
+        document.getElementById('auditModal').style.display = 'block';
+        window.currentAuditId = id;
+    }
+
+    function hideAuditModal() {
+        document.getElementById('auditModal').style.display = 'none';
+    }
+
+    // 通过审核
+    function approveSubmission(id) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/admin/approve-submission/' + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var result = JSON.parse(xhr.responseText);
+                if (result.success) {
+                    showAlert('审核通过！', 'success');
+                    loadPendingSubmissions();  // 刷新待审核列表
+                    loadBundleTable();          // 刷新捆表
+                } else {
+                    showAlert('操作失败：' + result.error, 'error');
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    // 拒绝审核
+    function rejectSubmission(id) {
+        if (!confirm('确定要拒绝这条提交吗？')) {
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', '/api/admin/reject-submission/' + id, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var result = JSON.parse(xhr.responseText);
+                if (result.success) {
+                    showAlert('已拒绝', 'success');
+                    loadPendingSubmissions();  // 刷新待审核列表
+                } else {
+                    showAlert('操作失败：' + result.error, 'error');
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    // 显示提示信息
+    function showAlert(message, type) {
+        var alert = document.getElementById('alert');
+        alert.className = 'alert ' + type;
+        alert.textContent = message;
+        alert.style.display = 'block';
+        setTimeout(function() {
+            alert.style.display = 'none';
+        }, 3000);
+    }
+
+
+    // 加载团员捆表
+    function loadBundleTable() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/admin/bundle-table', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var tbody = document.getElementById('bundleBody');
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="14" style="text-align: center;">暂无分配记录</td></tr>';
+                    return;
+                }
+
+                var html = '';
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    var statusClass = item.status === '已提交' ? 'status-submitted' : 'status-pending';
+
+                    // 在 loadBundleTable 函数中，修改图片显示部分
+                    html += '<tr>' +
+                        '<td><strong>' + item.cn + '</strong></td>' +
+                        '<td>' + item.group + '</td>' +
+                        '<td>' + item.productCode + '</td>' +
+                        '<td>' + item.quantity + '</td>' +
+                        '<td>' + (item.rate > 0 ? '1k' + item.rate : '无捆') + '</td>' +
+                        '<td class="bundle-highlight">' + item.originalBundles + '</td>' +
+                        '<td class="' + statusClass + '">' + item.status + '</td>' +
+                        '<td>' + (item.pushType || '') + '</td>' +
+                        '<td>' + (item.pushDetails || '') + '</td>' +
+                        '<td>' + formatImageGallery(item.pushImages) + '</td>' +  // 修改这里
+                        '<td>' + (item.selfColdDetails || '') + '</td>' +
+                        '<td>' + formatImageGallery(item.selfColdImages) + '</td>' +  // 修改这里
+                        '<td class="bundle-highlight">' + (item.releaseBundles || 0) + '</td>' +
+                        '<td class="bundle-highlight">' + (item.finalBundles || 0) + '</td>' +
+                        '</tr>';
+                }
+                tbody.innerHTML = html;
+            }
+        };
+        xhr.send();
+    }
+    // 格式化图片显示为缩略图列表
+    function formatImageGallery(images) {
+        if (!images || images.length === 0) return '无';
+
+        var html = '<div class="image-gallery">';
+        for (var i = 0; i < images.length; i++) {
+            var imgUrl = '/uploads/' + images[i];
+            html += '<img src="' + imgUrl + '" onclick="previewImage(\'' + imgUrl + '\');event.stopPropagation();">';
+        }
+        html += '</div>';
+        return html;
+    }
+
+    // 图片预览函数
+    function previewImage(src) {
+        document.getElementById('previewImage').src = src;
+        document.getElementById('imagePreviewModal').style.display = 'block';
+    }
+    // 加载分配记录
+    function loadAllocations() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/admin/allocations', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var tbody = document.getElementById('allocationBody');
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">暂无分配记录</td></tr>';
+                    return;
+                }
+
+                var html = '';
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    var date = new Date(item.createdAt).toLocaleString('zh-CN');
+                    var details = '';
+                    for (var j = 0; j < item.allocations.length; j++) {
+                        if (j > 0) details += '，';
+                        details += item.allocations[j].cn + ':' + item.allocations[j].quantity;
+                    }
+
+                    html += '<tr>' +
+                        '<td>' + date + '</td>' +
+                        '<td>' + item.group_text + '</td>' +
+                        '<td>' + item.productCode + '</td>' +
+                        '<td>' + details + '</td>' +
+                        '<td>' +
+                        '<button class="edit-btn" onclick="editAllocation(\'' + item.id + '\')">编辑</button> ' +
+                        '<button class="delete-btn" onclick="deleteAllocation(\'' + item.id + '\')">删除</button>' +
+                        '</td>' +
+                        '</tr>';
+                }
+                tbody.innerHTML = html;
+            }
+        };
+        xhr.send();
+    }
+
+    // 删除分配
+    function deleteAllocation(id) {
+        if (!confirm('确定要删除这条分配记录吗？')) {
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', '/api/admin/allocations/' + id, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var result = JSON.parse(xhr.responseText);
+                if (result.success) {
+                    showAlert('删除成功！', 'success');
+                    loadAllocations();
+                    loadBundleTable();
+                } else {
+                    showAlert('删除失败：' + result.error, 'error');
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    // 编辑分配
+    function editAllocation(id) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/admin/allocations', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var allocation = data.find(a => a.id === id);
+
+                if (allocation) {
+                    // 修改这里：使用 text input 而不是 select
+                    document.querySelector('input[name="group"]').value = allocation.group_text;
+                    document.getElementById('productCode').value = allocation.productCode;
+
+                    var container = document.getElementById('allocationItems');
+                    container.innerHTML = '';
+
+                    for (var i = 0; i < allocation.allocations.length; i++) {
+                        var item = allocation.allocations[i];
+                        var newItem = document.createElement('div');
+                        newItem.className = 'allocation-item';
+                        newItem.innerHTML = `
+                        <input type="text" name="allocationCn" value="${item.cn}" placeholder="CN" required>
+                        <input type="number" name="allocationQuantity" value="${item.quantity}" placeholder="数量" min="1" required>
+                        <button type="button" class="remove-btn" onclick="removeAllocationItem(this)">删除</button>
+                    `;
+                        container.appendChild(newItem);
+                    }
+
+                    var form = document.getElementById('allocationForm');
+                    form.onsubmit = function(e) {
+                        e.preventDefault();
+                        updateAllocation(id);
+                    };
+
+                    showTab('allocation');
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    // 更新分配
+    function updateAllocation(id) {
+        // 修改这里：从 text input 获取值
+        var groupInput = document.querySelector('input[name="group"]');
+        var group = groupInput.value.toUpperCase();
+
+        var productCode = document.getElementById('productCode').value;
+        var allocationCns = document.getElementsByName('allocationCn');
+        var allocationQtys = document.getElementsByName('allocationQuantity');
+
+        var allocations = [];
+        for (var i = 0; i < allocationCns.length; i++) {
+            if (allocationCns[i].value && allocationQtys[i].value) {
+                allocations.push({
+                    cn: allocationCns[i].value,
+                    quantity: parseInt(allocationQtys[i].value)
+                });
+            }
+        }
+
+        if (allocations.length === 0) {
+            showAlert('请至少填写一条分配', 'error');
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', '/api/admin/allocations/' + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var result = JSON.parse(xhr.responseText);
+                if (result.success) {
+                    showAlert('更新成功！', 'success');
+
+                    document.getElementById('allocationForm').reset();
+                    document.getElementById('allocationItems').innerHTML = `
+                    <div class="allocation-item">
+                        <input type="text" name="allocationCn" placeholder="CN" required>
+                        <input type="number" name="allocationQuantity" placeholder="数量" min="1" required>
+                        <button type="button" class="remove-btn" onclick="removeAllocationItem(this)">删除</button>
+                    </div>
+                `;
+
+                    document.getElementById('allocationForm').onsubmit = function(e) {
+                        e.preventDefault();
+                        submitAllocation();
+                    };
+
+                    loadAllocations();
+                    loadBundleTable();
+                } else {
+                    showAlert('更新失败：' + result.error, 'error');
+                }
+            }
+        };
+        xhr.send(JSON.stringify({
+            group: group,
+            productCode: productCode,
+            allocations: allocations
+        }));
+    }
+
+    // 添加分配项
+    function addAllocationItem() {
+        var container = document.getElementById('allocationItems');
+        var newItem = document.createElement('div');
+        newItem.className = 'allocation-item';
+        newItem.innerHTML = `
+            <input type="text" name="allocationCn" placeholder="CN" required>
+            <input type="number" name="allocationQuantity" placeholder="数量" min="1" required>
+            <button type="button" class="remove-btn" onclick="removeAllocationItem(this)">删除</button>
+        `;
+        container.appendChild(newItem);
+    }
+
+    // 删除分配项
+    function removeAllocationItem(btn) {
+        var item = btn.parentElement;
+        if (item.parentElement.children.length > 1) {
+            item.remove();
+        } else {
+            showAlert('至少保留一项', 'error');
+        }
+    }
+
+    // 提交分配
+    function submitAllocation() {
+        // 修改这里：从 text input 获取值
+        var groupInput = document.querySelector('input[name="group"]');
+        var group = groupInput.value.toUpperCase();
+
+        var productCode = document.getElementById('productCode').value;
+        var allocationCns = document.getElementsByName('allocationCn');
+        var allocationQtys = document.getElementsByName('allocationQuantity');
+
+        var allocations = [];
+        for (var i = 0; i < allocationCns.length; i++) {
+            if (allocationCns[i].value && allocationQtys[i].value) {
+                allocations.push({
+                    cn: allocationCns[i].value,
+                    quantity: parseInt(allocationQtys[i].value)
+                });
+            }
+        }
+
+        if (allocations.length === 0) {
+            showAlert('请至少填写一条分配', 'error');
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/admin/allocations', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var result = JSON.parse(xhr.responseText);
+                if (result.success) {
+                    showAlert('分配提交成功！', 'success');
+                    document.getElementById('allocationForm').reset();
+                    document.getElementById('allocationItems').innerHTML = `
+                    <div class="allocation-item">
+                        <input type="text" name="allocationCn" placeholder="CN" required>
+                        <input type="number" name="allocationQuantity" placeholder="数量" min="1" required>
+                        <button type="button" class="remove-btn" onclick="removeAllocationItem(this)">删除</button>
+                    </div>
+                `;
+                    loadAllocations();
+                    loadBundleTable();
+                } else {
+                    showAlert('提交失败：' + result.error, 'error');
+                }
+            }
+        };
+        xhr.send(JSON.stringify({
+            group: group,
+            productCode: productCode,
+            allocations: allocations
+        }));
+    }
+
+    document.getElementById('allocationForm').onsubmit = function(e) {
+        e.preventDefault();
+        submitAllocation();
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBundleTable();
+    });
+</script>
+</body>
+</html>
