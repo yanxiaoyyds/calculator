@@ -241,142 +241,145 @@
                 flex-direction: column;
                 gap: 10px;
             }
-            /* 文件上传容器 */
-            .file-input-container {
-                position: relative;
-                width: 100%;
-                min-height: 50px;
-                border: 2px dashed #667eea;
-                border-radius: 8px;
-                background: #f8f9fa;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
+        }
 
-            .file-input-container:hover {
-                border-color: #764ba2;
-                background: #f0f2f5;
-            }
+        /* 文件上传容器 */
+        .file-input-container {
+            position: relative;
+            width: 100%;
+            min-height: 50px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
-            .file-input-container input[type="file"] {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                opacity: 0;
-                cursor: pointer;
-                z-index: 2;
-            }
+        .file-input-container:hover {
+            border-color: #764ba2;
+            background: #f0f2f5;
+        }
 
+        .file-input-container input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .file-input-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .hint-icon {
+            font-size: 24px;
+        }
+
+        .hint-text {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        /* 图片预览容器 */
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item .remove-preview {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 71, 87, 0.9);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        .preview-item .remove-preview:hover {
+            background: #ff4757;
+        }
+
+        .file-note {
+            display: block;
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* 继续添加图片按钮 */
+        .file-add-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            color: #667eea;
+            font-size: 14px;
+            border: 1px dashed #667eea;
+        }
+
+        .file-add-more:hover {
+            background: #e0e0e0;
+        }
+
+        .add-icon {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
             .file-input-hint {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                padding: 15px;
-                pointer-events: none;
-                z-index: 1;
+                padding: 12px;
             }
 
             .hint-icon {
-                font-size: 24px;
+                font-size: 20px;
             }
 
             .hint-text {
-                color: #667eea;
-                font-weight: 500;
-            }
-
-            /* 图片预览容器 */
-            .image-preview-container {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                margin-top: 15px;
+                font-size: 14px;
             }
 
             .preview-item {
-                position: relative;
-                width: 80px;
-                height: 80px;
-                border-radius: 8px;
-                overflow: hidden;
-                border: 2px solid #e0e0e0;
-            }
-
-            .preview-item img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .preview-item .remove-preview {
-                position: absolute;
-                top: 2px;
-                right: 2px;
-                width: 20px;
-                height: 20px;
-                background: rgba(255, 71, 87, 0.9);
-                color: white;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 12px;
-                cursor: pointer;
-                z-index: 3;
-            }
-
-            .preview-item .remove-preview:hover {
-                background: #ff4757;
-            }
-
-            .file-note {
-                display: block;
-                color: #666;
-                font-size: 12px;
-                margin-top: 5px;
-            }
-            /* 继续添加图片按钮 */
-            .file-add-more {
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-                padding: 8px 15px;
-                background: #f0f0f0;
-                border-radius: 20px;
-                margin-top: 10px;
-                cursor: pointer;
-                color: #667eea;
-                font-size: 14px;
-                border: 1px dashed #667eea;
-            }
-
-            .file-add-more:hover {
-                background: #e0e0e0;
-            }
-
-            .add-icon {
-                font-size: 18px;
-                font-weight: bold;
-            }
-            /* 移动端适配 */
-            @media (max-width: 768px) {
-                .file-input-hint {
-                    padding: 12px;
-                }
-
-                .hint-icon {
-                    font-size: 20px;
-                }
-
-                .hint-text {
-                    font-size: 14px;
-                }
-
-                .preview-item {
-                    width: 70px;
-                    height: 70px;
-                }
+                width: 70px;
+                height: 70px;
             }
         }
     </style>
@@ -442,18 +445,18 @@
             <!-- 推车图部分 - 修复多图上传 -->
             <div class="form-group">
                 <label for="pushImages">📸 推车图：</label>
-                <div class="file-input-container">
-                    <input type="file" id="pushImages" name="pushImages" accept="image/*" multiple>
+                <div class="file-input-container" onclick="document.getElementById('pushImages').click()">
+                    <input type="file" id="pushImages" name="pushImages" accept="image/*" style="display: none;">
                     <div class="file-input-hint">
                         <span class="hint-icon">📱</span>
-                        <span class="hint-text">点击选择图片（可多选）</span>
+                        <span class="hint-text">点击选择图片</span>
                     </div>
                 </div>
                 <div id="pushImagePreview" class="image-preview-container"></div>
-                <div class="file-add-more" onclick="document.getElementById('pushImages').click()">
+                <div class="file-add-more" onclick="triggerFileSelect('pushImages')">
                     <span class="add-icon">+</span> 继续添加图片
                 </div>
-                <small class="file-note">支持多张图片，点击"继续添加"可以追加选择</small>
+                <small class="file-note">可以多次点击"继续添加"来选择多张图片</small>
             </div>
         </div>
 
@@ -472,18 +475,18 @@
             <!-- 自带冷图部分 - 同样修复 -->
             <div class="form-group">
                 <label for="selfColdImages">❄️ 自带冷图：</label>
-                <div class="file-input-container">
-                    <input type="file" id="selfColdImages" name="selfColdImages" accept="image/*" multiple>
+                <div class="file-input-container" onclick="document.getElementById('selfColdImages').click()">
+                    <input type="file" id="selfColdImages" name="selfColdImages" accept="image/*" style="display: none;">
                     <div class="file-input-hint">
                         <span class="hint-icon">📱</span>
-                        <span class="hint-text">点击选择图片（可多选）</span>
+                        <span class="hint-text">点击选择图片</span>
                     </div>
                 </div>
                 <div id="coldImagePreview" class="image-preview-container"></div>
-                <div class="file-add-more" onclick="document.getElementById('selfColdImages').click()">
+                <div class="file-add-more" onclick="triggerFileSelect('selfColdImages')">
                     <span class="add-icon">+</span> 继续添加图片
                 </div>
-                <small class="file-note">支持多张图片，点击"继续添加"可以追加选择</small>
+                <small class="file-note">可以多次点击"继续添加"来选择多张图片</small>
             </div>
         </div>
 
@@ -494,6 +497,10 @@
 </div>
 
 <script>
+    // 存储已选择的文件
+    let selectedPushFiles = [];
+    let selectedColdFiles = [];
+
     // 显示提示信息
     function showAlert(message, type) {
         var alert = document.getElementById('alert');
@@ -541,9 +548,89 @@
         }
     }
 
+    // 触发文件选择
+    function triggerFileSelect(inputId) {
+        document.getElementById(inputId).click();
+    }
+
+    // 处理推车图选择
+    document.getElementById('pushImages').addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        selectedPushFiles = selectedPushFiles.concat(files);
+        updateFileInput(this, selectedPushFiles);
+        previewImages(selectedPushFiles, 'pushImagePreview', 'push');
+        // 清空 input 的值，允许重新选择同一个文件
+        this.value = '';
+    });
+
+    // 处理自带冷图选择
+    document.getElementById('selfColdImages').addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        selectedColdFiles = selectedColdFiles.concat(files);
+        updateFileInput(this, selectedColdFiles);
+        previewImages(selectedColdFiles, 'coldImagePreview', 'cold');
+        this.value = '';
+    });
+
+    // 更新 file input 的 files 属性
+    function updateFileInput(input, files) {
+        const dt = new DataTransfer();
+        files.forEach(file => dt.items.add(file));
+        input.files = dt.files;
+    }
+
+    // 图片预览函数
+    function previewImages(files, containerId, type) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        files.forEach((file, index) => {
+            const reader = new FileReader();
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            previewItem.dataset.index = index;
+            previewItem.dataset.type = type;
+
+            const img = document.createElement('img');
+            reader.onload = function(e) {
+                img.src = e.target.result;
+            };
+
+            const removeBtn = document.createElement('span');
+            removeBtn.className = 'remove-preview';
+            removeBtn.innerHTML = '×';
+            removeBtn.onclick = function() {
+                removeFile(type, index);
+            };
+
+            previewItem.appendChild(img);
+            previewItem.appendChild(removeBtn);
+            container.appendChild(previewItem);
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // 移除文件
+    function removeFile(type, index) {
+        if (type === 'push') {
+            selectedPushFiles.splice(index, 1);
+            updateFileInput(document.getElementById('pushImages'), selectedPushFiles);
+            previewImages(selectedPushFiles, 'pushImagePreview', 'push');
+        } else {
+            selectedColdFiles.splice(index, 1);
+            updateFileInput(document.getElementById('selfColdImages'), selectedColdFiles);
+            previewImages(selectedColdFiles, 'coldImagePreview', 'cold');
+        }
+    }
+
     // 表单提交
     document.getElementById('submitForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        // 确保 file input 中有正确的文件
+        updateFileInput(document.getElementById('pushImages'), selectedPushFiles);
+        updateFileInput(document.getElementById('selfColdImages'), selectedColdFiles);
 
         var formData = new FormData(this);
 
@@ -569,6 +656,11 @@
                             <button type="button" class="remove-btn" onclick="removeItem(this)">删除</button>
                         </div>
                     `;
+                    // 清空已选择的文件
+                    selectedPushFiles = [];
+                    selectedColdFiles = [];
+                    document.getElementById('pushImagePreview').innerHTML = '';
+                    document.getElementById('coldImagePreview').innerHTML = '';
                 } else {
                     showAlert('提交失败：' + result.error, 'error');
                 }
@@ -576,66 +668,6 @@
         };
         xhr.send(formData);
     });
-    // 处理推车图预览
-    document.getElementById('pushImages').addEventListener('change', function(e) {
-        previewImages(this, 'pushImagePreview');
-    });
-
-    // 处理自带冷图预览
-    document.getElementById('selfColdImages').addEventListener('change', function(e) {
-        previewImages(this, 'coldImagePreview');
-    });
-
-    // 图片预览函数
-    function previewImages(input, previewContainerId) {
-        const container = document.getElementById(previewContainerId);
-        container.innerHTML = '';
-
-        if (input.files) {
-            for (let i = 0; i < input.files.length; i++) {
-                const file = input.files[i];
-                const reader = new FileReader();
-
-                const previewItem = document.createElement('div');
-                previewItem.className = 'preview-item';
-
-                const img = document.createElement('img');
-
-                reader.onload = function(e) {
-                    img.src = e.target.result;
-                };
-
-                const removeBtn = document.createElement('span');
-                removeBtn.className = 'remove-preview';
-                removeBtn.innerHTML = '×';
-                removeBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    removeFile(input, i);
-                    previewItem.remove();
-                };
-
-                previewItem.appendChild(img);
-                previewItem.appendChild(removeBtn);
-                container.appendChild(previewItem);
-
-                reader.readAsDataURL(file);
-            }
-        }
-    }
-
-    // 移除选中的文件
-    function removeFile(input, index) {
-        const dt = new DataTransfer();
-        const files = input.files;
-
-        for (let i = 0; i < files.length; i++) {
-            if (i !== index) {
-                dt.items.add(files[i]);
-            }
-        }
-
-        input.files = dt.files;
-    }
 </script>
 </body>
 </html>
