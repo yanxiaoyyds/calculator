@@ -602,6 +602,160 @@
                 right: 15px;
             }
         }
+        /* ===== 手机端优化 ===== */
+        @media screen and (max-width: 768px) {
+            /* 视图切换按钮 */
+            .view-toggle {
+                display: flex;
+                gap: 10px;
+                margin: 10px 0;
+                justify-content: center;
+            }
+
+            .view-btn {
+                padding: 8px 20px;
+                border: none;
+                border-radius: 20px;
+                background: #f0f0f0;
+                color: #666;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .view-btn.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            /* 导出按钮 */
+            .export-btn {
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 8px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-left: 10px;
+            }
+
+            /* 表格视图（默认） */
+            .table-view {
+                display: block;
+                overflow-x: auto;
+            }
+
+            /* 卡片视图 */
+            .card-view {
+                display: none;
+            }
+
+            .card-view.active {
+                display: block;
+            }
+
+            .bundle-card {
+                background: white;
+                border-radius: 12px;
+                padding: 15px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-left: 4px solid #667eea;
+            }
+
+            .card-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .card-row:last-child {
+                border-bottom: none;
+            }
+
+            .card-label {
+                color: #666;
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .card-value {
+                font-weight: bold;
+                color: #333;
+                font-size: 14px;
+            }
+
+            .card-value.highlight {
+                color: #764ba2;
+                font-size: 16px;
+            }
+
+            .status-badge {
+                display: inline-block;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+            .status-submitted {
+                background: #d4edda;
+                color: #155724;
+            }
+
+            .status-pending {
+                background: #fff3cd;
+                color: #856404;
+            }
+
+            /* 简化视图（用于导出/快速查看） */
+            .simple-view {
+                display: none;
+            }
+
+            .simple-view.active {
+                display: block;
+            }
+
+            .simple-card {
+                background: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .simple-info {
+                display: flex;
+                gap: 15px;
+                align-items: center;
+            }
+
+            .simple-cn {
+                font-weight: bold;
+                color: #333;
+                min-width: 60px;
+            }
+
+            .simple-original {
+                color: #764ba2;
+                font-weight: bold;
+                min-width: 40px;
+            }
+
+            .simple-final {
+                color: #28a745;
+                font-weight: bold;
+                min-width: 40px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -611,6 +765,14 @@
     <!-- 管理员工具 -->
     <div class="admin-tools">
         <button class="danger-btn" onclick="showClearDatabaseModal()">清空数据库</button>
+    </div>
+
+    <!-- 手机端视图切换 (放在表格上面) -->
+    <div class="view-toggle" id="viewToggle">
+        <button class="view-btn active" onclick="switchView('table')">表格</button>
+        <button class="view-btn" onclick="switchView('card')">卡片</button>
+        <button class="view-btn" onclick="switchView('simple')">简洁</button>
+        <button class="export-btn" onclick="exportToCSV()">导出CSV</button>
     </div>
 
     <div class="tab-container">
@@ -1069,7 +1231,8 @@
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
                 var tbody = document.getElementById('bundleBody');
-
+                // 保存原始数据用于视图切换
+                tbody.dataset.rawData = JSON.stringify(data);
                 if (data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="14" style="text-align: center;">暂无分配记录</td></tr>';
                     return;
@@ -1375,6 +1538,135 @@
     document.addEventListener('DOMContentLoaded', function() {
         loadBundleTable();
     });
+    // 视图切换
+    function switchView(mode) {
+        document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const tableView = document.querySelector('.table-container');
+        const cardView = document.getElementById('cardView');
+        const simpleView = document.getElementById('simpleView');
+
+        if (mode === 'table') {
+            tableView.style.display = 'block';
+            if (cardView) cardView.style.display = 'none';
+            if (simpleView) simpleView.style.display = 'none';
+        } else if (mode === 'card') {
+            tableView.style.display = 'none';
+            if (cardView) cardView.style.display = 'block';
+            if (simpleView) simpleView.style.display = 'none';
+            renderCardView();
+        } else if (mode === 'simple') {
+            tableView.style.display = 'none';
+            if (cardView) cardView.style.display = 'none';
+            if (simpleView) simpleView.style.display = 'block';
+            renderSimpleView();
+        }
+    }
+
+    // 渲染卡片视图
+    function renderCardView() {
+        const data = JSON.parse(document.getElementById('bundleBody').dataset.rawData || '[]');
+        let html = '<div id="cardView" class="card-view active">';
+        data.forEach(item => {
+            const statusClass = item.status === '已提交' ? 'status-submitted' : 'status-pending';
+            html += `
+            <div class="bundle-card">
+                <div class="card-row">
+                    <span class="card-label">👤 CN</span>
+                    <span class="card-value"><strong>${item.cn}</strong></span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">📁 组别</span>
+                    <span class="card-value">${item.group}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">📦 分配</span>
+                    <span class="card-value">${item.productCode}:${item.quantity}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">🔢 原捆</span>
+                    <span class="card-value highlight">${item.originalBundles}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">🛒 推车</span>
+                    <span class="card-value">${item.pushDetails || '无'}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">❄️ 自带冷</span>
+                    <span class="card-value">${item.selfColdDetails || '无'}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">📸 推车图</span>
+                    <span class="card-value">${formatImageGallery(item.pushImages)}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">📸 自带冷图</span>
+                    <span class="card-value">${formatImageGallery(item.selfColdImages)}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">✅ 解捆</span>
+                    <span class="card-value highlight">${item.releaseBundles}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">🏁 后捆</span>
+                    <span class="card-value highlight">${item.finalBundles}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">📊 状态</span>
+                    <span class="card-value"><span class="status-badge ${statusClass}">${item.status}</span></span>
+                </div>
+            </div>
+        `;
+        });
+        html += '</div>';
+
+        // 插入到表格后面
+        const container = document.querySelector('.container');
+        const existingCardView = document.getElementById('cardView');
+        if (existingCardView) existingCardView.remove();
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
+    // 渲染简洁视图 (CN 原捆 后捆)
+    function renderSimpleView() {
+        const data = JSON.parse(document.getElementById('bundleBody').dataset.rawData || '[]');
+        let html = '<div id="simpleView" class="simple-view">';
+        data.forEach(item => {
+            html += `
+            <div class="simple-card">
+                <div class="simple-info">
+                    <span class="simple-cn">${item.cn}</span>
+                    <span class="simple-original">原:${item.originalBundles}</span>
+                    <span class="simple-final">后:${item.finalBundles}</span>
+                </div>
+                <span class="status-badge ${item.status === '已提交' ? 'status-submitted' : 'status-pending'}">${item.status}</span>
+            </div>
+        `;
+        });
+        html += '</div>';
+
+        const container = document.querySelector('.container');
+        const existingSimpleView = document.getElementById('simpleView');
+        if (existingSimpleView) existingSimpleView.remove();
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
+    // 导出 CSV
+    function exportToCSV() {
+        const data = JSON.parse(document.getElementById('bundleBody').dataset.rawData || '[]');
+        let csv = 'CN,组别,分配制品,分配数量,原捆,推车类型,推车明细,自带冷明细,解捆,后捆,状态\n';
+
+        data.forEach(item => {
+            csv += `${item.cn},${item.group},${item.productCode},${item.quantity},${item.originalBundles},${item.pushType || ''},"${item.pushDetails || ''}","${item.selfColdDetails || ''}",${item.releaseBundles},${item.finalBundles},${item.status}\n`;
+        });
+
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `捆数统计_${new Date().toISOString().slice(0,10)}.csv`;
+        link.click();
+    }
 </script>
 </body>
 </html>
