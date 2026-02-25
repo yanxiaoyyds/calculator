@@ -1414,19 +1414,19 @@
                             coldDetails = '无';
                         }
 
-                        // 在 loadPendingSubmissions 函数中
+                        // 使用 _id 而不是 id
                         html += '<tr>' +
                             '<td>' + sub.cn + '</td>' +
                             '<td>' + sub.group_text + '</td>' +
                             '<td>' + sub.pushType + '</td>' +
                             '<td>' + pushDetails + '</td>' +
-                            '<td>' + formatImageGallery(sub.pushImages) + '</td>' +  // 修改这里
+                            '<td>' + formatImageGallery(sub.pushImages) + '</td>' +
                             '<td>' + coldDetails + '</td>' +
-                            '<td>' + formatImageGallery(sub.selfColdImages) + '</td>' +  // 修改这里
+                            '<td>' + formatImageGallery(sub.selfColdImages) + '</td>' +
                             '<td>' + date + '</td>' +
                             '<td>' +
-                            '<button class="audit-btn" onclick="approveSubmission(\'' + sub.id + '\')">通过</button>' +
-                            '<button class="reject-btn" onclick="rejectSubmission(\'' + sub.id + '\')">拒绝</button>' +
+                            '<button class="audit-btn" onclick="approveSubmission(\'' + sub._id + '\')">通过</button>' +
+                            '<button class="reject-btn" onclick="rejectSubmission(\'' + sub._id + '\')">拒绝</button>' +
                             '</td>' +
                             '</tr>';
                     }
