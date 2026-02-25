@@ -1607,8 +1607,9 @@
                         '<td>' + item.productCode + '</td>' +
                         '<td>' + details + '</td>' +
                         '<td>' +
-                        '<button class="edit-btn" onclick="editAllocation(\'' + item.id + '\')">编辑</button> ' +
-                        '<button class="delete-btn" onclick="deleteAllocation(\'' + item.id + '\')">删除</button>' +
+                        // 使用 _id
+                        '<button class="edit-btn" onclick="editAllocation(\'' + item._id + '\')">编辑</button>' +
+                        '<button class="delete-btn" onclick="deleteAllocation(\'' + item._id + '\')">删除</button>' +
                         '</td>' +
                         '</tr>';
                 }
@@ -1632,7 +1633,9 @@
                 if (result.success) {
                     showAlert('删除成功！', 'success');
                     loadAllocations();
-                    loadBundleTable();
+                    loadBundleTable();  // 刷新捆表
+                    // 触发重新计算
+                    fetch('/api/admin/recalculate-all', { method: 'POST' });
                 } else {
                     showAlert('删除失败：' + result.error, 'error');
                 }
@@ -1648,7 +1651,7 @@
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                var allocation = data.find(a => a.id === id);
+                var allocation = data.find(a => a._id === id);
 
                 if (allocation) {
                     // 修改这里：使用 text input 而不是 select
@@ -1685,7 +1688,6 @@
 
     // 更新分配
     function updateAllocation(id) {
-        // 修改这里：从 text input 获取值
         var groupInput = document.querySelector('input[name="group"]');
         var group = groupInput.value.toUpperCase();
 
@@ -1719,12 +1721,12 @@
 
                     document.getElementById('allocationForm').reset();
                     document.getElementById('allocationItems').innerHTML = `
-                    <div class="allocation-item">
-                        <input type="text" name="allocationCn" placeholder="CN" required>
-                        <input type="number" name="allocationQuantity" placeholder="数量" min="1" required>
-                        <button type="button" class="remove-btn" onclick="removeAllocationItem(this)">删除</button>
-                    </div>
-                `;
+                <div class="allocation-item">
+                    <input type="text" name="allocationCn" placeholder="CN" required>
+                    <input type="number" name="allocationQuantity" placeholder="数量" min="1" required>
+                    <button type="button" class="remove-btn" onclick="removeAllocationItem(this)">删除</button>
+                </div>
+            `;
 
                     document.getElementById('allocationForm').onsubmit = function(e) {
                         e.preventDefault();
@@ -1733,6 +1735,8 @@
 
                     loadAllocations();
                     loadBundleTable();
+                    // 触发重新计算
+                    fetch('/api/admin/recalculate-all', { method: 'POST' });
                 } else {
                     showAlert('更新失败：' + result.error, 'error');
                 }
