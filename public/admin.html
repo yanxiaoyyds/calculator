@@ -1565,8 +1565,7 @@
 
         var html = '<div class="image-gallery">';
         for (var i = 0; i < images.length; i++) {
-            // 修改这里：使用 /api/image/ 而不是 /uploads/
-            var imgUrl = '/api/image/' + images[i];
+            var imgUrl = '/uploads/' + images[i];  // 改回 /uploads/
             html += '<img src="' + imgUrl + '" onclick="previewImage(\'' + imgUrl + '\');event.stopPropagation();">';
         }
         html += '</div>';
